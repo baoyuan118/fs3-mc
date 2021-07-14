@@ -40,14 +40,15 @@ car         generate car file for filecoin offline deal
 send        send filecoin deal
 ```
 
-## Docker Container
-### Stable
+## Install Fs3-mc
+### Option 1. Docker Container
+#### Stable
 ```
 docker pull minio/mc
 docker run minio/mc ls play
 ```
 
-### Edge
+#### Edge
 ```
 docker pull minio/mc:edge
 docker run minio/mc:edge ls play
@@ -61,7 +62,7 @@ docker run -it --entrypoint=/bin/sh minio/mc
 
 then use the [`mc config` command](#add-a-cloud-storage-service).
 
-### GitLab CI
+#### GitLab CI
 When using the Docker container in GitLab CI, you must [set the entrypoint to an empty string](https://docs.gitlab.com/ee/ci/docker/using_docker_images.html#overriding-the-entrypoint-of-an-image).
 
 ```
@@ -76,8 +77,8 @@ deploy:
     - mc cp <source> <destination>
 ```
 
-## macOS
-### Homebrew
+### Option 2. MacOS/GNU/Linux/Microsoft Windows
+#### MacOS Homebrew
 Install mc packages using [Homebrew](http://brew.sh/)
 
 ```
@@ -85,8 +86,7 @@ brew install minio/stable/mc
 mc --help
 ```
 
-## GNU/Linux
-### Binary Download
+#### GNU/Linux Binary Download
 | Platform | Architecture | URL |
 | ---------- | -------- |------|
 |GNU/Linux|64-bit Intel|https://dl.min.io/client/mc/release/linux-amd64/mc |
@@ -98,8 +98,7 @@ chmod +x mc
 ./mc --help
 ```
 
-## Microsoft Windows
-### Binary Download
+#### Microsoft Windows Binary Download
 | Platform | Architecture | URL |
 | ---------- | -------- |------|
 |Microsoft Windows|64-bit Intel|https://dl.min.io/client/mc/release/windows-amd64/mc.exe |
@@ -108,7 +107,7 @@ chmod +x mc
 mc.exe --help
 ```
 
-## Install from Source
+### Option 3. Install from Source
 Source installation is only intended for developers and advanced users. If you do not have a working Golang environment, please follow [How to install Golang](https://golang.org/doc/install). Minimum version required is [go1.13](https://golang.org/dl/#stable)
 
 ```sh
@@ -176,10 +175,11 @@ Get your AccessKeyID and SecretAccessKey by following [Google Credentials Guide]
 mc alias set gcs  https://storage.googleapis.com BKIKJAA5BMMU2RHO6IBB V8f1CwQqAcwo80UEIJEjc5gVQUSSx5ohQ9GSrr12
 ```
 
-## Test Your Setup
+## Run Fs3-mc
+### Test Your Setup
 `mc` is pre-configured with https://play.min.io, aliased as "play". It is a hosted MinIO server for testing and development purpose.  To test Amazon S3, simply replace "play" with "s3" or the alias you used at the time of setup.
 
-*Example:*
+**Example:**
 
 List all buckets from https://play.min.io
 
@@ -192,17 +192,17 @@ mc ls play
 [2016-03-20 09:08:36 PDT]     0B s3git-test/
 ```
 
-Make a bucket
-`mb` command creates a new bucket.
+### Make a bucket:
+`mb` command is used to create a new bucket.
 
-*Example:*
+**Example:**
 ```
 mc mb play/mybucket
 Bucket created successfully `play/mybucket`.
 ```
 
-Copy Objects
-`cp` command copies data from one or more sources to a target.
+### Copy Objects:
+`cp` command is used to copy data from one or more sources to a target.
 
 *Example:*
 ```
@@ -215,37 +215,34 @@ you may send an offline deal to a miner
 #### Prepare your environment
  - A running lotus node at local
  - A filecoin wallet with sufficient balance to send deal, set as environment variable $FIL_WALLET
- - MinIO credentials set as environment variables $ENDPOINT, $ACCESS_KEY, $SECRET_KEY
+ - Fs3 credentials set as environment variables $ENDPOINT, $ACCESS_KEY, $SECRET_KEY
 
 #### Generate CAR file
-`car generate` command generates car file
+`car generate` command is used to generate a car file
 ```
---car-dir: folder for splitted smaller pieces, in form of .car
---slice-size: size for each pieces
+--car-dir: folder for splitted pieces which are in form of .car
+--slice-size: size of each pieces. Be careful, a lot of cpu, memory and time would be consumed if slice size is very large.
 --parallel: number goroutines run when building ipld nodes
---graph-name: it will use graph-name for prefix of smaller pieces
---calc-commp: calculation of pieceCID, default value is false. Be careful, a lot of cpu, memory and time would be consumed if slice size is very large.
+--graph-name: graph-name will be used as a prefix of each pieces
+--calc-commp: calculation of pieceCID, default value is false.
 --parent-path: usually just be the same as /path/to/dataset, it's just a method to figure out relative path when building IPLD graph
 ```
 
+**Example:**
+  
 ```
-mc car generate 
---car-dir=path/to/car-dir \
---slice-size=17179869184 \
---parallel=2 \
---graph-name=gs-test \
---calc-commp=true \
---parent-path=/path/to/dataset \
-/path/to/dataset
+mc car generate --car-dir=path/to/car-dir --slice-size=17179869184 --parallel=2 --graph-name=gs-test --calc-commp=true --parent-path=/path/to/dataset
 ```
 
 #### Upload CAR file
-Upload the CAR file to MinIO, then you can share it to your miner
+`cp` command is used to upload the CAR file to Fs3, then you can share it to your storage provider.
 
+**Example:**
+  
 ```mc cp /path/to/car_file play/mybucket```
 
 #### Send deal
-`send` command can send an offline deal to a designated miner, a fully synchronized lotus node at local is required
+`send` command is used to send an offline deal to a designated storage provicer, a fully synchronized lotus node at local is required.
 
 ```
 --piece-cid
@@ -253,13 +250,13 @@ Upload the CAR file to MinIO, then you can share it to your miner
 --data-cid
 --from: specify filecoin wallet to use, default: $FIL_WALLET
 --price: specify the deal price for each GiB of file, default: 0
---start: specify days for miner to process the file, default: 7
+--start: specify days for storage provider to process the file, default: 7
 --duration: specify length in day to store the file, default: 365
---upload: specify whether upload the generated csv to MinIO or not, default: false
-          In order to connect to your MinIO instance, you need to set environment variables of ACCESS_KEY, SECRET_KEY and ENDPOINT
---minio-bucket: specify the bucket name used in MinIO, if '--upload is set to true', default: swan
+--upload: specify whether upload the generated csv to Fs3 or not, default: false
+          In order to connect to your Fs3 instance, you need to set environment variables of ACCESS_KEY, SECRET_KEY and ENDPOINT
+--minio-bucket: specify the bucket name used in Fs3, if '--upload is set to true', default: swan
 ```
-
+**Example:**
 ```
 mc send --piece-cid baga6ea4seaqdmps47pxpgpclxo4xgqtkoxylwasf4mm524wldmguqgu45rce2pq --piece-size 2130706432 --data-cid QmcRx2dFaScfu61Vp13gZPk87zT4BL5PdG5n7Pnr93oPRc
 ```
