@@ -123,7 +123,7 @@ To add one or more Amazon S3 compatible hosts, please follow the instructions be
 mc alias set <ALIAS> <YOUR-S3-ENDPOINT> <YOUR-ACCESS-KEY> <YOUR-SECRET-KEY> --api <API-SIGNATURE> --path <BUCKET-LOOKUP-TYPE>
 ```
 
-<ALIAS> is simply a short name to your cloud storage service. S3 end-point, access and secret keys are supplied by your cloud storage provider. API signature is an optional argument. By default, it is set to "S3v4".
+<*ALIAS*> is simply a short name to your cloud storage service. S3 end-point, access and secret keys are supplied by your cloud storage provider. API signature is an optional argument. By default, it is set to "S3v4".
 
 Path is an optional argument. It is used to indicate whether dns or path style url requests are supported by the server. It accepts "on", "off" as valid values to enable/disable path style requests.. By default, it is set to "auto" and SDK automatically determines the type of url lookup to use.
 
@@ -176,7 +176,7 @@ mc alias set gcs  https://storage.googleapis.com BKIKJAA5BMMU2RHO6IBB V8f1CwQqAc
 ```
 
 ## Run Fs3-mc
-### Test Your Setup
+### Step 1. Test Your Setup
 `mc` is pre-configured with https://play.min.io, aliased as "play". It is a hosted MinIO server for testing and development purpose.  To test Amazon S3, simply replace "play" with "s3" or the alias you used at the time of setup.
 
 **Example:**
@@ -192,7 +192,7 @@ mc ls play
 [2016-03-20 09:08:36 PDT]     0B s3git-test/
 ```
 
-### Make a bucket:
+### Stap 2. Make a bucket:
 `mb` command is used to create a new bucket.
 
 **Example:**
@@ -201,23 +201,23 @@ mc mb play/mybucket
 Bucket created successfully `play/mybucket`.
 ```
 
-### Copy Objects:
+### Step 3. Copy Objects:
 `cp` command is used to copy data from one or more sources to a target.
 
-*Example:*
+**Example:**
 ```
 mc cp myobject.txt play/mybucket
 myobject.txt:    14 B / 14 B  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  100.00 % 41 B/s 0
 ```
 
-### Send a deal
+### Step 4. Send a deal
 you may send an offline deal to a miner
 #### Prepare your environment
  - A running lotus node at local
  - A filecoin wallet with sufficient balance to send deal, set as environment variable $FIL_WALLET
  - Fs3 credentials set as environment variables $ENDPOINT, $ACCESS_KEY, $SECRET_KEY
 
-#### Generate CAR file
+#### Step 4.1. Generate CAR file
 `car generate` command is used to generate a car file
 ```
 --car-dir: folder for splitted pieces which are in form of .car
@@ -234,14 +234,14 @@ you may send an offline deal to a miner
 mc car generate --car-dir=path/to/car-dir --slice-size=17179869184 --parallel=2 --graph-name=gs-test --calc-commp=true --parent-path=/path/to/dataset
 ```
 
-#### Upload CAR file
+#### Step 4.2. Upload CAR file
 `cp` command is used to upload the CAR file to Fs3, then you can share it to your storage provider.
 
 **Example:**
   
 ```mc cp /path/to/car_file play/mybucket```
 
-#### Send deal
+#### Step 4.3. Send deal
 `send` command is used to send an offline deal to a designated storage provicer, a fully synchronized lotus node at local is required.
 
 ```
