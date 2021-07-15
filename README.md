@@ -1,7 +1,7 @@
-# Fs3 Client Quickstart Guide
+# FS3 Client Quickstart Guide
 [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Go Report Card](https://goreportcard.com/badge/minio/mc)](https://goreportcard.com/report/minio/mc) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/mc.svg?maxAge=604800)](https://hub.docker.com/r/minio/mc/) [![license](https://img.shields.io/badge/license-AGPL%20V3-blue)](https://github.com/minio/mc/blob/master/LICENSE)
 
-Fs3 Client (mc) provides a modern alternative to UNIX commands like ls, cat, cp, mirror, diff, find etc. It supports filesystems and Amazon S3 compatible cloud storage service (AWS Signature v2 and v4).
+FS3 Client (mc) provides a modern alternative to UNIX commands like ls, cat, cp, mirror, diff, find etc. It supports filesystems and Amazon S3 compatible cloud storage service (AWS Signature v2 and v4).
 
 ```
 alias       set, remove and list aliases in configuration file
@@ -40,7 +40,7 @@ car         generate car file for filecoin offline deal
 send        send filecoin deal
 ```
 
-## Install Fs3-mc
+## Install FS3-mc
 ### Option 1. Docker Container
 #### Stable
 ```
@@ -77,16 +77,8 @@ deploy:
     - mc cp <source> <destination>
 ```
 
-### Option 2. MacOS/GNU/Linux/Microsoft Windows
-#### MacOS Homebrew
-Install mc packages using [Homebrew](http://brew.sh/)
-
-```
-brew install minio/stable/mc
-mc --help
-```
-
-#### GNU/Linux Binary Download
+### Option 2. GNU/Linux
+#### Binary Download
 | Platform | Architecture | URL |
 | ---------- | -------- |------|
 |GNU/Linux|64-bit Intel|https://dl.min.io/client/mc/release/linux-amd64/mc |
@@ -98,20 +90,12 @@ chmod +x mc
 ./mc --help
 ```
 
-#### Microsoft Windows Binary Download
-| Platform | Architecture | URL |
-| ---------- | -------- |------|
-|Microsoft Windows|64-bit Intel|https://dl.min.io/client/mc/release/windows-amd64/mc.exe |
-
-```
-mc.exe --help
-```
 
 ### Option 3. Install from Source
 Source installation is only intended for developers and advanced users. If you do not have a working Golang environment, please follow [How to install Golang](https://golang.org/doc/install). Minimum version required is [go1.13](https://golang.org/dl/#stable)
 
 ```sh
-GO111MODULE=on go get github.com/minio/mc
+GO111MODULE=on go get github.com/filswan/fs3
 ```
 
 ## Add a Cloud Storage Service
@@ -175,7 +159,7 @@ Get your AccessKeyID and SecretAccessKey by following [Google Credentials Guide]
 mc alias set gcs  https://storage.googleapis.com BKIKJAA5BMMU2RHO6IBB V8f1CwQqAcwo80UEIJEjc5gVQUSSx5ohQ9GSrr12
 ```
 
-## Run Fs3-mc
+## Run FS3-mc
 ### Step 1. Test Your Setup
 `mc` is pre-configured with https://play.min.io, aliased as "play". It is a hosted MinIO server for testing and development purpose.  To test Amazon S3, simply replace "play" with "s3" or the alias you used at the time of setup.
 
@@ -215,7 +199,7 @@ you may send an offline deal to a miner
 #### Prepare your environment
  - A running lotus node at local
  - A filecoin wallet with sufficient balance to send deal, set as environment variable $FIL_WALLET
- - Fs3 credentials set as environment variables $ENDPOINT, $ACCESS_KEY, $SECRET_KEY
+ - MinIO credentials set as environment variables $ENDPOINT, $ACCESS_KEY, $SECRET_KEY
 
 #### Step 4.1. Generate CAR file
 `car generate` command is used to generate a car file
@@ -235,7 +219,7 @@ mc car generate --car-dir=path/to/car-dir --slice-size=17179869184 --parallel=2 
 ```
 
 #### Step 4.2. Upload CAR file
-`cp` command is used to upload the CAR file to Fs3, then you can share it to your storage provider.
+`cp` command is used to upload the CAR file to FS3, then you can share it to your storage provider.
 
 **Example:**
   
@@ -252,9 +236,9 @@ mc car generate --car-dir=path/to/car-dir --slice-size=17179869184 --parallel=2 
 --price: specify the deal price for each GiB of file, default: 0
 --start: specify days for storage provider to process the file, default: 7
 --duration: specify length in day to store the file, default: 365
---upload: specify whether upload the generated csv to Fs3 or not, default: false
-          In order to connect to your Fs3 instance, you need to set environment variables of ACCESS_KEY, SECRET_KEY and ENDPOINT
---minio-bucket: specify the bucket name used in Fs3, if '--upload is set to true', default: swan
+--upload: specify whether upload the generated csv to FS3 or not, default: false
+          In order to connect to your FS3 instance, you need to set environment variables of ACCESS_KEY, SECRET_KEY and ENDPOINT
+--minio-bucket: specify the bucket name used in FS3, if '--upload is set to true', default: swan
 ```
 **Example:**
 ```
